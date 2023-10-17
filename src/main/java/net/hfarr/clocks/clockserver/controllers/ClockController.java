@@ -3,6 +3,7 @@ package net.hfarr.clocks.clockserver.controllers;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,12 +33,10 @@ public class ClockController {
   }
 
   @PutMapping(path = "/clock")
-  public ClockModel putClock(ClockModel newClock) {
+  public ClockModel putClock(@RequestBody ClockModel newClock) {
     log.info("Request received: PUT /clock");
     this.clock = newClock;
     return this.clock;
   }
   
 }
-  
-  
