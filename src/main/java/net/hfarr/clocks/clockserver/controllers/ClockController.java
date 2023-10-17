@@ -1,5 +1,6 @@
 package net.hfarr.clocks.clockserver.controllers;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -7,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.hfarr.clocks.clockserver.model.ClockModel;
 
 @Slf4j
+@CrossOrigin
 @RestController
 public class ClockController {
 
