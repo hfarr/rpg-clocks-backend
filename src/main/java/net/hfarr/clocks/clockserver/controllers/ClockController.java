@@ -2,6 +2,7 @@ package net.hfarr.clocks.clockserver.controllers;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
@@ -12,20 +13,30 @@ import net.hfarr.clocks.clockserver.model.ClockModel;
 @RestController
 public class ClockController {
 
-  @GetMapping(path = "/clock")
-  public ClockModel getClock() {
+  private ClockModel clock;
 
-    log.info("Request received: /clock");
-    final ClockModel result = ClockModel.builder()
+  public ClockController() {
+
+    this.clock = ClockModel.builder()
       .segments(8)
       .progress(3)
       .build();
-    
-
-    return result;
   }
 
-  
+  @GetMapping(path = "/clock")
+  public ClockModel getClock() {
+
+    log.info("Request received: GET /clock");
+    
+    return this.clock;
+  }
+
+  @PutMapping(path = "/clock")
+  public ClockModel putClock(ClockModel newClock) {
+    log.info("Request received: PUT /clock");
+    this.clock = newClock;
+    return this.clock;
+  }
   
 }
   
