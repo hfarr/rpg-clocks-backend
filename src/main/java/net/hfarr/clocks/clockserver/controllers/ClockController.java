@@ -4,14 +4,17 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
 import net.hfarr.clocks.clockserver.model.ClockModel;
 
+// @RequestMapping("/api/clocks")
 @Slf4j
 @CrossOrigin
 @RestController
+@RequestMapping("/clock")
 public class ClockController {
 
   private ClockModel clock;
@@ -24,7 +27,8 @@ public class ClockController {
       .build();
   }
 
-  @GetMapping(path = "/clock")
+  // @GetMapping(path = "/clock")
+  @GetMapping
   public ClockModel getClock() {
 
     log.info("Request received: GET /clock");
@@ -32,7 +36,8 @@ public class ClockController {
     return this.clock;
   }
 
-  @PutMapping(path = "/clock")
+  // @PutMapping(path = "/clock")
+  @PutMapping
   public ClockModel putClock(@RequestBody ClockModel newClock) {
     log.info("Request received: PUT /clock");
     this.clock = newClock;
