@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.yaml.snakeyaml.emitter.Emitter;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -69,6 +70,21 @@ public class SsePinger {
 
   public boolean isRunning() {
     return pingThread.isAlive();
+  }
+
+  private void sendMessage(SseEmitter sse, String message) throws IOException {
+    if (completeEmitters.contains(sse)) return;
+    sse.send(message);
+  }
+
+  public void sendMessage(String message) {
+    for (final SseEmitter emitter : emitters) {
+      try {
+        sendMessage(emitter, message);
+      } catch (IOException ioe) {
+        log.error("Error sending message :(", ioe);
+      }
+    }
   }
 
 }
