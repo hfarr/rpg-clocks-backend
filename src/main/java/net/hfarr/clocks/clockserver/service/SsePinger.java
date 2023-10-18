@@ -2,7 +2,9 @@ package net.hfarr.clocks.clockserver.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -14,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SsePinger {
   
   private List<SseEmitter> emitters;
+  private Set<SseEmitter> completeEmitters = new HashSet<>();
   private Thread pingThread;
   
   public SsePinger() {
@@ -30,20 +33,37 @@ public class SsePinger {
         Thread.sleep(1000);
         log.info("Ping!");
         for (final SseEmitter emitter : emitters) {
+
+          if (completeEmitters.contains(emitter)) continue;
+
           emitter.send("Ping");
         }
+
+        completeEmitters.forEach(emitters::remove);
+        completeEmitters.clear();
+
         // emitters.forEach(emitter -> emitter.send("Ping") );
       } catch (IOException ioe) {
         log.error("Error sending event", ioe);
       } catch (InterruptedException ie) {
         log.error("Pinger thread interrupted", ie);
         break;
+      } catch (Exception e) {
+        log.error("Ping thread crashed for unexpected reason", e);
       }
     }
+
+    log.info("Pinger stopped");
+
   }
 
   // TODO temp
   public void addEmitter(SseEmitter emitter) {
+    // emitter.onCompletion( () -> completeEmitters.add(emitter) );
+    emitter.onCompletion( () -> { 
+      completeEmitters.add(emitter);
+      log.info("Emitter complete", emitter);
+    });
     emitters.add(emitter);
   }
 
