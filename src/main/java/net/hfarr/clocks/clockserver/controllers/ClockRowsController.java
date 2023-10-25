@@ -57,7 +57,7 @@ public class ClockRowsController {
   }
 
   @PostMapping("/add")
-  public void addRow(@RequestBody ClockModel clock) {
+  public void addRow() {
 
     globalRows.add(new ClockRowModel());
     emit();
