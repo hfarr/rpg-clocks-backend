@@ -38,6 +38,7 @@ public class SSERegistrationController {
     SseEmitter emitter = new SseEmitter();
     emitter.onCompletion( () -> { 
       pinger.markComplete(emitter);
+      globalTable.markComplete(emitter);
 
       log.info("Emitter complete", emitter);
     });
