@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import lombok.extern.slf4j.Slf4j;
 import net.hfarr.clocks.clockserver.service.SsePinger;
+import net.hfarr.clocks.clockserver.service.SseTable;
 
 @CrossOrigin
 @Slf4j
@@ -22,17 +23,27 @@ import net.hfarr.clocks.clockserver.service.SsePinger;
 public class SSERegistrationController {
   
   private final SsePinger pinger;
+
+  private final SseTable globalTable;
   
   @Autowired
-  public SSERegistrationController(SsePinger pinger) {
+  public SSERegistrationController(SsePinger pinger, SseTable table) {
     this.pinger = pinger;
+    globalTable = table;
   }
 
   
   @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public SseEmitter registerSSE(HttpEntity<Object> entity) {
     SseEmitter emitter = new SseEmitter();
+    emitter.onCompletion( () -> { 
+      pinger.markComplete(emitter);
+
+      log.info("Emitter complete", emitter);
+    });
+
     pinger.addEmitter(emitter);
+    globalTable.addEmitter(emitter);
 
     log.info("Stub implementation");
     return emitter;

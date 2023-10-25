@@ -11,10 +11,11 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.yaml.snakeyaml.emitter.Emitter;
 
 import lombok.extern.slf4j.Slf4j;
+import net.hfarr.clocks.clockserver.service.SSE.EventSource;
 
 @Slf4j
 @Service
-public class SsePinger {
+public class SsePinger implements EventSource {
   
   private List<SseEmitter> emitters;
   private Set<SseEmitter> completeEmitters = new HashSet<>();
@@ -61,11 +62,11 @@ public class SsePinger {
   // TODO temp
   public void addEmitter(SseEmitter emitter) {
     // emitter.onCompletion( () -> completeEmitters.add(emitter) );
-    emitter.onCompletion( () -> { 
-      completeEmitters.add(emitter);
-      log.info("Emitter complete", emitter);
-    });
     emitters.add(emitter);
+  }
+
+  public void markComplete(SseEmitter emitter) {
+    completeEmitters.add(emitter);
   }
 
   public boolean isRunning() {

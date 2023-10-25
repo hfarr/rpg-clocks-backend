@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.hfarr.clocks.clockserver.model.ClockModel;
 import net.hfarr.clocks.clockserver.model.ClockRowModel;
+import net.hfarr.clocks.clockserver.service.SseTable;
 
 // @Slf4j
 @CrossOrigin
@@ -24,12 +26,20 @@ import net.hfarr.clocks.clockserver.model.ClockRowModel;
 public class ClockRowsController {
   
   private List<ClockRowModel> globalRows;
+  private final SseTable tableEventGenerator; // TODO do I like this name
 
-  public ClockRowsController() {
+  @Autowired
+  public ClockRowsController(SseTable tableEventEmitter) {
 
     // TODO load from file
     globalRows = new ArrayList<ClockRowModel>();
 
+    tableEventGenerator = tableEventEmitter;
+
+  }
+
+  private void emit() {
+    tableEventGenerator.sendUpdatedTable(globalRows);
   }
 
   @PostMapping("/{id}/add")
@@ -41,8 +51,8 @@ public class ClockRowsController {
     ClockRowModel appendee = globalRows.get(id);
 
     appendee.addClock(clock);
+    emit();
 
-    // TODO send SSE
     return ResponseEntity.ok().build();
   }
 
@@ -50,7 +60,7 @@ public class ClockRowsController {
   public void addRow(@RequestBody ClockModel clock) {
 
     globalRows.add(new ClockRowModel());
-    // TODO send SSE
+    emit();
   }
 
   @PutMapping("/set")
@@ -61,8 +71,7 @@ public class ClockRowsController {
     }
 
     this.globalRows = newRows;
-
-    // TODO send SSE
+    emit();
   }
 
   @GetMapping
