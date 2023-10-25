@@ -32,7 +32,7 @@ public class SsePinger {
       try {
         
         Thread.sleep(1000);
-        log.info("Ping!");
+        // log.info("Ping!");
         for (final SseEmitter emitter : emitters) {
 
           if (completeEmitters.contains(emitter)) continue;
