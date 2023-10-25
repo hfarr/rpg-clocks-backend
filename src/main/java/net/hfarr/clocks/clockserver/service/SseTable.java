@@ -27,6 +27,10 @@ public class SseTable implements EventSource {
   }
 
   private void emit(SseEmitter emitter, List<ClockRowModel> table) throws IOException {
+    if (completeEmitters.contains(emitter)) {
+      return;
+    }
+    // build sent object first?
     emitter.send(
       SseEmitter.event()
         .name(EVENT_NAME)
@@ -34,25 +38,28 @@ public class SseTable implements EventSource {
         .build()
     );
   }
-
-  public void sendUpdatedTable(List<ClockRowModel> table) {
+  
+  private void tryEmit(SseEmitter emitter, List<ClockRowModel> table) {
     try {
 
-      for (final SseEmitter emitter : emitters) {
-        if (completeEmitters.contains(emitter))
-          continue;
-        emit(emitter, table);
-      }
-
-      completeEmitters.forEach(emitters::remove);
-      completeEmitters.clear();
-
+      emit(emitter, table);
       // emitters.forEach(emitter -> emitter.send("Ping") );
     } catch (IOException ioe) {
       log.error("Error sending event (Expected?) {}", ioe);
     } catch (Exception e) {
-      log.error("Unexpected error! {}", e);
+      log.error("Unexpected error! {}", e.getMessage());
+      // e.printStackTrace();
     }
+  }
+
+  public void sendUpdatedTable(List<ClockRowModel> table) {
+    for (final SseEmitter emitter : emitters) {
+      tryEmit(emitter, table);
+    }
+
+    // housekeeping
+    completeEmitters.forEach(emitters::remove);
+    completeEmitters.clear();
 
   }
 
