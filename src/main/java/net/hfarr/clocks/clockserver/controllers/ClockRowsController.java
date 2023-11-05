@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,7 +39,11 @@ public class ClockRowsController {
     globalRows.add(ClockRowModel.createEmptyRow("Row 2"));
     globalRows.get(0).addClock(ClockModel.builder()
         .segments(8)
-        .progress(3)
+        .progress(2)
+        .build());
+    globalRows.get(0).addClock(ClockModel.builder()
+        .segments(6)
+        .progress(2)
         .build());
     
     tableEventGenerator = tableEventEmitter;
@@ -52,7 +57,7 @@ public class ClockRowsController {
   }
 
   @PostMapping("/{id}/add")
-  public ResponseEntity<String> addClock(@RequestParam Integer id, @RequestBody ClockModel clock) {
+  public ResponseEntity<String> addClock(@PathVariable Integer id, @RequestBody ClockModel clock) {
     if ( id >= globalRows.size() || id < 0 ) {
       return ResponseEntity.badRequest().body("Row does not exist.");
     }
