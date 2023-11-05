@@ -110,7 +110,7 @@ public class ClockRowsController {
     emit();
   }
 
-  @PutMapping("/set")
+  @PutMapping
   public void setRows(@RequestBody List<ClockRowModel> newRows) throws IOException {
     if ( Objects.isNull(newRows) ) {
       // Is this possible?
