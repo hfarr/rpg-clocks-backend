@@ -22,6 +22,13 @@ public class ClockRowModel {
     // clocks.
   }
 
+  public static ClockRowModel createEmptyRow(String name) {
+    final ClockRowModel crm = new ClockRowModel();
+    crm.name = name;
+    
+    return crm;
+  }
+
 
   /**
    * Add a clock to the clock row

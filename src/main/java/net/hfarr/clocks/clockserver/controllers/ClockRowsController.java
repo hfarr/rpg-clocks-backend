@@ -15,11 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.slf4j.Slf4j;
 import net.hfarr.clocks.clockserver.model.ClockModel;
 import net.hfarr.clocks.clockserver.model.ClockRowModel;
 import net.hfarr.clocks.clockserver.service.SseTable;
 
-// @Slf4j
+@Slf4j
 @CrossOrigin
 @RestController
 @RequestMapping("/rows")
@@ -33,8 +34,16 @@ public class ClockRowsController {
 
     // TODO load from file
     globalRows = new ArrayList<ClockRowModel>();
-
+    globalRows.add(ClockRowModel.createEmptyRow("Row 1"));
+    globalRows.add(ClockRowModel.createEmptyRow("Row 2"));
+    globalRows.get(0).addClock(ClockModel.builder()
+        .segments(8)
+        .progress(3)
+        .build());
+    
     tableEventGenerator = tableEventEmitter;
+
+    log.info("initialized");
 
   }
 
