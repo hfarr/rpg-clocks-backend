@@ -85,12 +85,16 @@ public class ClockRowsController {
 
   }
 
+  private synchronized void commitToFile() throws IOException {
+    objectMapper.writeValue(database, globalRows);
+  }
+
   private void emit() {
     tableEventGenerator.sendUpdatedTable(globalRows);
   }
 
   @PostMapping("/{id}/add")
-  public ResponseEntity<String> addClock(@PathVariable Integer id, @RequestBody ClockModel clock) {
+  public ResponseEntity<String> addClock(@PathVariable Integer id, @RequestBody ClockModel clock) throws IOException {
     if ( id >= globalRows.size() || id < 0 ) {
       return ResponseEntity.badRequest().body("Row does not exist.");
     }
@@ -98,26 +102,31 @@ public class ClockRowsController {
     ClockRowModel appendee = globalRows.get(id);
 
     appendee.addClock(clock);
+    // TODO don't make response success dependent on DB saving?
+    commitToFile();
     emit();
 
     return ResponseEntity.ok().build();
   }
 
+  // TODO check what happens with controller methods when throwing checked exception
   @PostMapping("/add")
-  public void addRow() {
+  public void addRow() throws IOException {
 
     globalRows.add(new ClockRowModel());
+    commitToFile();
     emit();
   }
 
   @PutMapping("/set")
-  public void setRows(@RequestBody List<ClockRowModel> newRows) {
+  public void setRows(@RequestBody List<ClockRowModel> newRows) throws IOException {
     if ( Objects.isNull(newRows) ) {
       // Is this possible?
       return;
     }
 
     this.globalRows = newRows;
+    commitToFile();
     emit();
   }
 
